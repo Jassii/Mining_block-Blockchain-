@@ -6,7 +6,7 @@ class Blockchain:
   def __init__(self):#constructor..
     #self.chain = [{"block1":1,"block2":2,..},{..},{...}]  #we will store the list in the form of list..
     self.chain = []
-    self.create_block(previous_hash=0)  #Here we will try to create the block(first block is the genesis block)..(previous block hash value is set to zero for first block)
+    self.create_block(proof=1,previous_hash=0)  #Here we will try to create the block(first block is the genesis block)..(previous block hash value is set to zero for first block)
     
     #this create_block() function will create a (dictionary) and it will be (appended) int the (list chain)..
 
@@ -28,6 +28,18 @@ class Blockchain:
   def get_previous_block(self):
     return self.chain[-1]     #this will return the last block in the blockchain..
 
+  def proof_of_word(self,previous_proof):
+    #hash(new_proof)='0000ab45...'
+    new_proof =1
+    check_proof=False
+    while check_proof is False:
+    	hash_value = hashlib.sha256(str(new_proof**2 - previous_proof**2).encode()).hexdigest()
+    	if hash_value[0:4]=='0000':
+    		check_proof=True
+    	else:
+    	    new_proof+=1
+    return new_proof    	
+
 #(in order to execute everythin we have to create a Flask object)
 app = Flask(__name__)  #(__name__) is something which is required..
 
@@ -38,23 +50,26 @@ blk = Blockchain()
 #miner is supposed to create the block..(whosoever is mining..)
 def mine_block():  #it will be used to mine the block(create the block by the miner)
   previous_block = blk.get_previous_block()  #inorder to mine a particular block we have to get the previous block and with the help of that we have to find the previous hash..
+  previous_proof = previous_block['proof'] 
+  proof = blk.proof_of_work(previous_proof)  
 
   previous_hash = blk.hash(previous_block)  #calculating the hash value of the previous block..
 
   #now as we got the previous hash..it is time to create a block(mine a block)..
-  block = blk.create_block(previous_hash)
+  block = blk.create_block(proof,previous_hash)
   
   response = {'Message':"Congratulations your block is mined!!!!",
               'index':block['index'],
+              'proof' : proof,
               'previous_hash':block['previous_hash']}  #inorder to display on the browser..
 
   return response
 
  
 #Suppose I have to display the blockchain details...
-@app.route('/get_chain',methods=['GET'])
+@app.route('/get_chain')
 def get_chain():
-	response = {'chain':blk.chain}
+	response = {'chain':blk.self.chain,'Length of chain': len(blk.chain)}
 	return response
 
 
