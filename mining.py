@@ -4,7 +4,7 @@ from flask import Flask   #using web application
 
 class Blockchain:
   def __init__(self):#constructor..
-    #self.chain = [{"block1":1,"block2":2,..},{..},{...}]  #we will store the list in the form of list..
+    #self.chain = [{"block1":1,"block2":2,..},{..},{...}]  #we will store the list in the form of list.
     self.chain = []
     self.create_block(proof=1,previous_hash=0)  #Here we will try to create the block(first block is the genesis block)..(previous block hash value is set to zero for first block)
     
